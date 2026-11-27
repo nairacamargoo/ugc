@@ -224,6 +224,21 @@ footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;
 @media(max-width:520px){.go{flex-wrap:nowrap;gap:8px}.go .btn{flex:1;justify-content:center;padding:0 6px;font-size:12px;letter-spacing:.02em;white-space:nowrap}.steps ol{grid-template-columns:minmax(0,1fr)}.ficha{padding:18px}.ficha .body,.hero .ficha .body{grid-template-columns:minmax(0,1fr);gap:12px}.ficha img{width:56%;aspect-ratio:3/4;margin:0 auto}.hero .row{font-size:13px}.logo{font-size:22px}}
 @media(prefers-reduced-motion:reduce){.marq div{animation:none}html{scroll-behavior:auto}.btn{transition:none}}
 .langs{display:inline-flex;border:1.5px solid var(--ink);border-radius:999px;overflow:hidden;font-size:12px;font-weight:700;letter-spacing:.12em}.langs a{padding:5px 11px;text-decoration:none}.langs a[aria-current]{background:var(--ink);color:var(--bg)}
+.ficha-form{width:100%;max-width:640px;background:var(--creme);color:var(--cafe);border-radius:14px;padding:clamp(22px,4vw,36px);text-align:left;box-shadow:0 22px 36px -22px rgba(0,0,0,.4);position:relative}
+.ficha-form .ftop{display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin-bottom:18px}
+.ficha-form .ftop .serif{font-size:clamp(26px,3vw,34px)}
+.fgrid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.ficha-form label{display:flex;flex-direction:column;gap:6px;font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase}
+.ficha-form .full{grid-column:1/-1}
+.ficha-form input,.ficha-form select,.ficha-form textarea{font:16px 'Courier Prime',monospace;color:var(--cafe);background:#fff;border:1.5px solid #d9cfbf;border-radius:8px;padding:11px 12px;min-height:46px;width:100%;letter-spacing:0;text-transform:none}
+.ficha-form textarea{min-height:110px;resize:vertical}
+.ficha-form input:focus,.ficha-form select:focus,.ficha-form textarea:focus{outline:3px solid var(--agua);outline-offset:1px;border-color:var(--agua)}
+.ficha-form .btn{margin-top:18px;width:100%;justify-content:center}
+.ficha-form .btn[disabled]{opacity:.6;cursor:wait}
+.fstatus{margin-top:14px;font-size:15px;min-height:1.4em}
+.fstatus.ok{color:#1f7a4d;font-weight:700}.fstatus.err{color:var(--carimbo);font-weight:700}
+.hp{position:absolute;left:-9999px}
+@media(max-width:600px){.fgrid2{grid-template-columns:minmax(0,1fr)}}
 </style>
 </head>
 <body class="grain">
@@ -342,12 +357,30 @@ footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;
   <div id="faqlist"></div>
 </div></section>
 
-<section class="band cta grain"><div class="rep" aria-hidden="true" id="rep3"></div><div class="wrap">
+<section class="band cta grain" id="contato"><div class="rep" aria-hidden="true" id="rep3"></div><div class="wrap">
   <svg class="star" style="--s:72px" aria-hidden="true"><use href="#star"/></svg>
   <h2>Vamos abrir um protocolo?</h2>
   <p>Me conta o produto e o objetivo. Eu volto com uma ideia de vídeo pra sua marca.</p>
   <a class="btn red js-zap" href="#">Chamar no WhatsApp</a>
   <p style="font-size:14px">ou no Instagram: <a href="https://www.instagram.com/nairacamargoo/">@nairacamargoo</a></p>
+  <p style="font-size:14px">ou preencha a ficha abaixo</p>
+  <form class="ficha-form" id="leadform" action="https://formspree.io/f/xaeokvoq" method="POST">
+    <div class="ftop"><span class="serif">Ficha de pedido</span><span class="lab">Nº novo</span></div>
+    <input type="hidden" name="_subject" value="Novo lead do portfólio (PT)">
+    <input type="hidden" name="idioma" value="Português">
+    <input class="hp" type="text" name="_gotcha" tabindex="-1" autocomplete="off" aria-hidden="true">
+    <div class="fgrid2">
+      <label>Seu nome<input id="f-nome" name="nome" required autocomplete="name"></label>
+      <label>Marca ou empresa<input id="f-marca" name="marca" required autocomplete="organization"></label>
+      <label>E-mail<input id="f-email" type="email" name="email" required autocomplete="email"></label>
+      <label>WhatsApp<input id="f-whats" type="tel" name="whatsapp" autocomplete="tel" inputmode="tel"></label>
+      <label>Nicho<select id="f-nicho" name="nicho"><option value="">Escolha</option><option>Beleza</option><option>Wellness</option><option>Maternidade</option><option>Casa e deco</option><option>Outro</option></select></label>
+      <label>Produto ou serviço<input id="f-produto" name="produto"></label>
+      <label class="full">Conte o objetivo do vídeo<textarea id="f-msg" name="mensagem" required></textarea></label>
+    </div>
+    <button class="btn red" type="submit" id="f-btn">Enviar pedido</button>
+    <p class="fstatus" id="f-status" role="status" aria-live="polite"></p>
+  </form>
 </div></section>
 
 <footer><div class="wrap"><span>Nai Camargo · UGC creator</span><span><a href="#trabalhos">Trabalhos</a> · <a href="#como-funciona">Como funciona</a> · <a href="#faq">FAQ</a></span></div></footer>
@@ -359,6 +392,21 @@ const WHATSAPP = "5511995538619";
 const MSG = "Oi, Nai! Vi seu portfólio e quero um orçamento de vídeo UGC.";
 const zap = WHATSAPP ? "https://wa.me/" + WHATSAPP + "?text=" + encodeURIComponent(MSG) : "https://www.instagram.com/nairacamargoo/";
 document.querySelectorAll('.js-zap').forEach(a => a.href = zap);
+const lf = document.getElementById('leadform');
+if (lf) lf.addEventListener('submit', async e => {
+  e.preventDefault();
+  const btn = document.getElementById('f-btn'), st = document.getElementById('f-status');
+  btn.disabled = true; btn.textContent = "Enviando..."; st.className = 'fstatus'; st.textContent = '';
+  try {
+    const r = await fetch(lf.action, {method:'POST', body:new FormData(lf), headers:{Accept:'application/json'}});
+    if (!r.ok) throw new Error();
+    lf.reset(); st.className = 'fstatus ok'; st.textContent = "Recebido! Vou analisar e te respondo em breve.";
+  } catch (_) {
+    st.className = 'fstatus err'; st.textContent = "Não foi possível enviar. Tente de novo ou me chame no WhatsApp.";
+  }
+  btn.disabled = false; btn.textContent = "Enviar pedido";
+});
+
 /* Feedbacks reais das marcas. Para colocar o logo, preencha "logo" com o arquivo (ex: "logos/kandili.png"). */
 const feedbacks = [
   {marca:"Annalirisbeauty",quem:"Studio de beleza",logo:"logos/annalirisbeauty.png",t:"Nai, quero agradecer pela parceria e pelo carinho em cada detalhe da entrega! Fiquei muito satisfeita com o resultado. Você demonstrou muito profissionalismo, cuidado e dedicação em todo o processo, e isso fez toda a diferença. Está sendo uma experiência muito positiva trabalhar com você! Espero que possamos continuar com a nossa parceria e desenvolver muitos projetos juntas. Obrigada pelo carinho com a minha empresa."},
